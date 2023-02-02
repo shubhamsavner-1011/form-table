@@ -11,3 +11,4 @@ export const RegisterSchema = yup.object({
     .required("Password is required"),
   about: yup.string().required("About is required")
 });
+

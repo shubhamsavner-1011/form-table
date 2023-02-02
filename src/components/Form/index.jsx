@@ -1,49 +1,72 @@
 import { RegisterSchema } from "@/validation";
-import ClearIcon from "@mui/icons-material/Clear";
-import { Button, Grid, Typography } from "@mui/material";
+import { Button, Grid } from "@mui/material";
 import { Field, Form, Formik } from "formik";
 import React, { useState } from "react";
 import { DynamicTextfield } from "../TextField";
 import Error from "./errorMessage";
 import { useStyles } from "./style";
 
-const DynamicForm = ({setData, data}) => {
+const DynamicForm = ({ setData, data, edit, setOpen, setEditData }) => {
   const classes = useStyles();
   const [showPassword, setShowPassword] = useState(false);
-
+  const { v4: uuidv4 } = require("uuid");
   const [showIcon, setShowIcon] = useState(true);
+  const [index, setIndex] = useState(0);
+
+  React.useEffect(() => {
+    data.forEach((val, ind) => {
+      if (val?.id === edit?.id) {setIndex(ind);}
+    });
+  }, [data, edit?.id]);
+
   const initialValues = {
-    email: "",
-    password: "",
-    about: "",
+    id: edit?.id || "",
+    email: edit?.email || "",
+    password: edit?.password || "",
+    about: edit?.about || "",
   };
-  console.log(data, '>>>>data')
-   const onSubmit = async (values) => {
-   const date = new Date()    
-   const  newItems = {...values,createdDate:date.toLocaleDateString(),createdTime: date.toLocaleTimeString()}
-    setData([newItems, ...data])
+  const onSubmit = async (values) => {
+    const date = new Date();
+    const newItems = {
+      ...values,
+      id: edit?.id ? edit?.id : uuidv4(),
+      createdDate: date.toLocaleDateString(),
+      createdTime: date.toLocaleTimeString(),
+    };
+    if (edit?.id) {
+      const result = data;
+      result.splice(index, 1, newItems);
+      setData([...data]);
+      setOpen(false);
+      setEditData('')
+    } else {
+      setData([newItems, ...data]);
+      setOpen(false);
+      
+    }
   };
   return (
     <>
-      <div style={{ margin: "30px" }}>
-        <ClearIcon className={classes.icon} />
-      </div>
       <>
         <Grid container justifyContent="center">
-          <Grid item xs={12} sm={4} lg={4} className={classes.grid}>
+          <Grid item xs={12} sm={4} lg={10} className={classes.grid}>
             <Formik
               initialValues={initialValues}
               validationSchema={RegisterSchema}
               onSubmit={onSubmit}
+              enableReinitialize
             >
-              {({ errors, touched }) => (
-                <Form className="formBody" autoComplete="off">
+              {({ errors, touched, setFieldValue }) => (
+                <Form className="formBody" autoComplete="false">
                   <Field
                     component={DynamicTextfield}
                     error={errors.email && touched.email}
                     placeholder="Email"
                     name="email"
                     type="email"
+                    onChange={(e) =>
+                      setFieldValue("email", [...edit.email, e.target.value])
+                    }
                   />
                   <Error name="email" />
                   <Field
@@ -52,6 +75,12 @@ const DynamicForm = ({setData, data}) => {
                     placeholder="Password"
                     name="password"
                     type="password"
+                    onChange={(e) =>
+                      setFieldValue("password", [
+                        ...edit.password,
+                        e.target.value,
+                      ])
+                    }
                     showPassword={showPassword}
                     setShowPassword={setShowPassword}
                     showIcon={showIcon}
@@ -63,7 +92,10 @@ const DynamicForm = ({setData, data}) => {
                     error={errors.about && touched.about}
                     placeholder="About Us"
                     name="about"
-                    type="text"
+                    type="textarea"
+                    onChange={(e) =>
+                      setFieldValue("about", [...edit.about, e.target.value])
+                    }
                   />
                   <Error name="about" />
                   <Button
@@ -75,12 +107,11 @@ const DynamicForm = ({setData, data}) => {
                       margin: "30px 0",
                       padding: "10px 0",
                       "&:hover": {
-                       backgroundColor: 'black'
-    }
-                    } 
-                    }
+                        backgroundColor: "black",
+                      },
+                    }}
                   >
-                    Create Account
+                    {edit ? "Update" : "Create Account"}
                   </Button>
                 </Form>
               )}

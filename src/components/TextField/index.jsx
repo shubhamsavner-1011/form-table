@@ -1,7 +1,7 @@
-import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { IconButton, InputAdornment, TextField } from '@mui/material';
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { IconButton, InputAdornment, TextField } from "@mui/material";
 
-import React from 'react';
+import React from "react";
 
 export const DynamicTextfield = ({
   type,
@@ -23,7 +23,38 @@ export const DynamicTextfield = ({
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
-  return (
+  return type === "textarea" ? (
+    <TextField
+      margin="dense"
+      placeholder={placeholder}
+      variant={variant}
+      error={error}
+      fullWidth
+      multiline
+      rows={4}
+      type={isPassword ? "text" : type}
+      sx={{
+        "& fieldset": { border: "none", borderRadius: "50px" },
+      }}
+      InputProps={{
+          style: error
+            ? {
+                borderRadius: "16px",
+                border: "2.5px solid rgb(255 131 131)",
+                marginTop: "8px",
+                height: 120,
+              }
+            : {
+                borderRadius: "16px",
+                background: "#f7f7f7",
+                border: "2.5px solid #e5e5e5",
+                marginTop: "8px",
+                height: 120,
+              },
+      }}
+      {...field}
+    />
+  ) : (
     <>
       <TextField
         margin="dense"
@@ -31,29 +62,23 @@ export const DynamicTextfield = ({
         variant={variant}
         error={error}
         fullWidth
-        type={isPassword ? 'text' : type}
+        type={isPassword ? "text" : type}
         sx={{
-          '& fieldset': { border: 'none', borderRadius: '50px' },
+          "& fieldset": { border: "none", borderRadius: "50px" },
         }}
         InputProps={{
           style: error
             ? {
-                borderRadius: '16px',
-                alignItems: 'center',
-                border: '2.5px solid rgb(255 131 131)',
-                display: 'flex',
-                marginTop: '8px',
-                position: 'relative',
+                borderRadius: "16px",
+                border: "2.5px solid rgb(255 131 131)",
+                marginTop: "8px",
                 height: 50,
               }
             : {
-                borderRadius: '16px',
-                alignItems: 'center',
-                background: '#f7f7f7',
-                border: '2.5px solid #e5e5e5',
-                display: 'flex',
-                marginTop: '8px',
-                position: 'relative',
+                borderRadius: "16px",
+                background: "#f7f7f7",
+                border: "2.5px solid #e5e5e5",
+                marginTop: "8px",
                 height: 50,
               },
           endAdornment: showIcon && (
@@ -65,9 +90,9 @@ export const DynamicTextfield = ({
                 edge="end"
               >
                 {showPassword ? (
-                  <VisibilityOff sx={{ color: '#1CB0F6' }} />
+                  <Visibility sx={{ color: "black" }} />
                 ) : (
-                  <Visibility sx={{ color: '#1CB0F6' }} />
+                  <VisibilityOff sx={{ color: "black" }} />
                 )}
               </IconButton>
             </InputAdornment>
@@ -78,4 +103,3 @@ export const DynamicTextfield = ({
     </>
   );
 };
-
